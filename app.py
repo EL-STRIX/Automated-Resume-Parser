@@ -66,3 +66,11 @@ def candidate_detail(candidate_id):
     if not candidate:
         abort(404)
     return render_template("candidate.html", candidate=candidate)
+
+
+@app.post("/candidate/<int:candidate_id>/delete")
+def delete_candidate_route(candidate_id):
+    if not db.delete_candidate(candidate_id):
+        abort(404)
+    flash("Candidate deleted.", "success")
+    return redirect(url_for("index"))

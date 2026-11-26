@@ -197,3 +197,17 @@ def search_candidates(name=None, skills=None, degree=None):
             return candidates
     finally:
         conn.close()
+
+
+def delete_candidate(candidate_id):
+    conn = get_conn()
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM candidates WHERE id = %s RETURNING id",
+                    (candidate_id,),
+                )
+                return cur.fetchone() is not None
+    finally:
+        conn.close()
