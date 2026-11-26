@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ candidate.name or candidate.file_name }} - Candidate Detail</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 32px auto; padding: 0 16px; color: #222; }
+    a.back { display: inline-block; margin-bottom: 16px; color: #2563eb; text-decoration: none; }
+    section { margin-bottom: 20px; padding: 16px; border: 1px solid #ddd; border-radius: 4px; }
+    h1, h2, h3 { margin-top: 0; }
+    .meta p { margin: 6px 0; }
+    .category { margin-bottom: 12px; }
+    .tag { display: inline-block; padding: 3px 8px; margin: 3px 4px 3px 0; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 3px; font-size: 13px; }
+    ul { margin: 0; padding-left: 20px; }
+  </style>
+</head>
+<body>
+  <a class="back" href="{{ url_for('index') }}">&larr; Back to Candidates</a>
 
+  <section class="meta">
+    <h1>{{ candidate.name or candidate.file_name }}</h1>
+    <p><strong>Email:</strong> {{ candidate.email or 'N/A' }}</p>
+    <p><strong>Phone:</strong> {{ candidate.phone or 'N/A' }}</p>
+    <p><strong>File:</strong> {{ candidate.file_name }}</p>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    {% if candidate.skills %}
+      {% for category, items in candidate.skills | groupby('category') %}
+        <div class="category">
+          <h3>{{ category }}</h3>
+          {% for item in items %}
+            <span class="tag">{{ item.name }}</span>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No skills extracted.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Education</h2>
+    {% if candidate.education %}
+      <ul>
+        {% for edu in candidate.education %}
+          <li>
+            <strong>{{ edu.degree }}</strong>
+            {% if edu.institution %} — {{ edu.institution }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No education extracted.</p>
+    {% endif %}
+  </section>
+</body>
+</html>
