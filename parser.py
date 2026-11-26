@@ -47,6 +47,13 @@ def extract_phone(text):
     return None
 
 
+_SECTION_END_RE = re.compile(
+    r"^(?:summary|objective|skills|technical skills|experience|work experience|projects|certifications|achievements|awards|languages|interests|references)\b",
+    re.IGNORECASE,
+)
+_EDU_START_RE = re.compile(r"^(?:education|academic background|academics|qualifications)\b", re.IGNORECASE)
+
+
 def extract_name(text):
     if not text:
         return None
@@ -55,7 +62,10 @@ def extract_name(text):
         return None
 
     for line in lines:
-        doc = nlp(line)
+        if ":" in line and not line.lower().startswith("name:"):
+            continue
+        candidate_line = line[5:].strip() if line.lower().startswith("name:") else line
+        doc = nlp(candidate_line.title() if candidate_line.isupper() else candidate_line)
         for ent in doc.ents:
             if ent.label_ == "PERSON":
                 name = " ".join(ent.text.split())
@@ -65,10 +75,10 @@ def extract_name(text):
                     and not any(ch.isdigit() for ch in name)
                     and name.lower() not in _SKILL_MAP
                 ):
-                    return name
+                    return candidate_line if candidate_line.isupper() else name
 
     for line in lines:
-        if not any(ch.isdigit() for ch in line) and "@" not in line:
+        if not any(ch.isdigit() for ch in line) and "@" not in line and ":" not in line:
             return line
     return None
 
@@ -90,7 +100,21 @@ def extract_skills(text):
 def extract_education(text):
     if not text:
         return []
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    all_lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+    edu_lines = []
+    in_edu = False
+    for line in all_lines:
+        if _EDU_START_RE.match(line):
+            in_edu = True
+            edu_lines.append(line)
+            continue
+        if in_edu:
+            if _SECTION_END_RE.match(line):
+                break
+            edu_lines.append(line)
+
+    lines = edu_lines if edu_lines else all_lines
     results = []
     seen = set()
 
@@ -102,7 +126,7 @@ def extract_education(text):
         institution = None
 
         if _INSTITUTION_RE.search(line):
-            parts = [p.strip() for p in re.split(r"[,|\-]", line) if _INSTITUTION_RE.search(p)]
+            parts = [p.strip() for p in re.split(r"[,|\-\u2013\u2014\t]+", line) if _INSTITUTION_RE.search(p)]
             institution = parts[0] if parts else line
         elif i + 1 < len(lines) and _INSTITUTION_RE.search(lines[i + 1]):
             institution = lines[i + 1]
