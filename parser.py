@@ -122,16 +122,22 @@ def extract_education(text):
         deg_match = _DEGREE_RE.search(line)
         if not deg_match:
             continue
-        degree = deg_match.group(0)
-        institution = None
 
-        if _INSTITUTION_RE.search(line):
-            parts = [p.strip() for p in re.split(r"[,|\-\u2013\u2014\t]+", line) if _INSTITUTION_RE.search(p)]
-            institution = parts[0] if parts else line
+        segments = [s.strip() for s in re.split(r"[,|\-\u2013\u2014\t]+", line) if s.strip()]
+        deg_seg = next((s for s in segments if _DEGREE_RE.search(s)), deg_match.group(0))
+        deg_seg = re.sub(r"\s+(?:expected\b.*|(?:19|20)\d{2}\b.*)$", "", deg_seg, flags=re.IGNORECASE).strip()
+        degree = (deg_seg or deg_match.group(0))[:100]
+
+        institution = None
+        inst_segs = [s for s in segments if s != deg_seg and _INSTITUTION_RE.search(s)]
+        if inst_segs:
+            institution = inst_segs[0][:255]
+        elif _INSTITUTION_RE.search(line) and not inst_segs:
+            institution = line[:255]
         elif i + 1 < len(lines) and _INSTITUTION_RE.search(lines[i + 1]):
-            institution = lines[i + 1]
+            institution = lines[i + 1][:255]
         elif i - 1 >= 0 and _INSTITUTION_RE.search(lines[i - 1]):
-            institution = lines[i - 1]
+            institution = lines[i - 1][:255]
 
         key = (degree.lower(), (institution or "").lower())
         if key not in seen:
