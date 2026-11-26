@@ -112,6 +112,8 @@
       cursor: pointer;
       white-space: nowrap;
     }
+    .btn-secondary { background: #ffffff; color: #334155; border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
     .btn-danger-outline {
       background: #ffffff;
       color: #b91c1c;
@@ -121,20 +123,12 @@
     .btn-danger-solid { background: #dc2626; color: #ffffff; }
     .btn-danger-solid:hover { background: #b91c1c; }
 
-    details.confirm-delete { position: relative; }
-    details.confirm-delete > summary { list-style: none; }
-    details.confirm-delete > summary::-webkit-details-marker { display: none; }
-    .confirm-box {
-      display: flex;
+    .confirm-inline {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding: 6px 10px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 6px;
+      gap: 6px;
     }
-    .confirm-label { font-size: 12px; font-weight: 500; color: #991b1b; }
+    .confirm-inline[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -149,15 +143,15 @@
           <h1>{{ candidate.name or candidate.file_name }}</h1>
           <span class="file-badge">{{ candidate.file_name }}</span>
         </div>
-        <details class="confirm-delete">
-          <summary class="btn btn-danger-outline">Delete Candidate</summary>
-          <div class="confirm-box">
-            <span class="confirm-label">Are you sure?</span>
+        <div class="actions-row">
+          <button type="button" class="btn btn-danger-outline js-delete-trigger">Delete Candidate</button>
+          <span class="confirm-inline" hidden>
             <form action="{{ url_for('delete_candidate_route', candidate_id=candidate.id) }}" method="post">
               <button type="submit" class="btn btn-danger-solid">Yes, Delete</button>
             </form>
-          </div>
-        </details>
+            <button type="button" class="btn btn-secondary js-delete-cancel">Cancel</button>
+          </span>
+        </div>
       </div>
 
       <div class="meta-grid">
@@ -208,5 +202,23 @@
       {% endif %}
     </section>
   </div>
+
+  <script>
+    (function () {
+      const trigger = document.querySelector(".js-delete-trigger");
+      const cancel = document.querySelector(".js-delete-cancel");
+      const confirmBox = document.querySelector(".confirm-inline");
+      if (trigger && cancel && confirmBox) {
+        trigger.addEventListener("click", () => {
+          trigger.hidden = true;
+          confirmBox.hidden = false;
+        });
+        cancel.addEventListener("click", () => {
+          confirmBox.hidden = true;
+          trigger.hidden = false;
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

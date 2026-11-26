@@ -208,27 +208,14 @@
     .actions-row {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      vertical-align: top;
+      gap: 6px;
     }
-    details.confirm-delete { display: inline-block; position: relative; }
-    details.confirm-delete > summary { list-style: none; }
-    details.confirm-delete > summary::-webkit-details-marker { display: none; }
-    details.confirm-delete[open] > summary {
-      background: #fef2f2;
-      border-color: #fca5a5;
-    }
-    .confirm-box {
+    .confirm-inline {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 6px;
-      padding: 5px 8px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 6px;
     }
-    .confirm-label { font-size: 12px; font-weight: 500; color: #991b1b; }
+    .confirm-inline[hidden] { display: none; }
     .empty-state { text-align: center; padding: 28px 12px; color: #64748b; font-size: 14px; margin: 0; }
   </style>
 </head>
@@ -339,15 +326,13 @@
                   <td class="actions-cell">
                     <div class="actions-row">
                       <a class="btn btn-secondary btn-sm" href="{{ url_for('candidate_detail', candidate_id=c.id) }}">View</a>
-                      <details class="confirm-delete">
-                        <summary class="btn btn-danger-outline btn-sm">Delete</summary>
-                        <div class="confirm-box">
-                          <span class="confirm-label">Confirm?</span>
-                          <form action="{{ url_for('delete_candidate_route', candidate_id=c.id) }}" method="post">
-                            <button type="submit" class="btn btn-danger-solid btn-sm">Yes, Delete</button>
-                          </form>
-                        </div>
-                      </details>
+                      <button type="button" class="btn btn-danger-outline btn-sm js-delete-trigger">Delete</button>
+                      <span class="confirm-inline" hidden>
+                        <form action="{{ url_for('delete_candidate_route', candidate_id=c.id) }}" method="post">
+                          <button type="submit" class="btn btn-danger-solid btn-sm">Yes, Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary btn-sm js-delete-cancel">Cancel</button>
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -398,6 +383,22 @@
           }
           input.files = dt.files;
           renderFiles(input.files);
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        const trigger = e.target.closest(".js-delete-trigger");
+        if (trigger) {
+          const row = trigger.closest(".actions-row");
+          trigger.hidden = true;
+          row.querySelector(".confirm-inline").hidden = false;
+          return;
+        }
+        const cancel = e.target.closest(".js-delete-cancel");
+        if (cancel) {
+          const row = cancel.closest(".actions-row");
+          row.querySelector(".confirm-inline").hidden = true;
+          row.querySelector(".js-delete-trigger").hidden = false;
         }
       });
     })();
