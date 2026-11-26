@@ -1,0 +1,5 @@
+flask
+spacy
+psycopg2-binary
+pdfplumber
+python-docx
