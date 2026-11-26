@@ -2,6 +2,33 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+_DEGREE_ALIASES = {
+    "b.tech": ["b.tech", "btech", "bachelor of technology"],
+    "btech": ["b.tech", "btech", "bachelor of technology"],
+    "bachelor of technology": ["b.tech", "btech", "bachelor of technology"],
+    "be": ["be", "b.e", "b.e.", "bachelor of engineering"],
+    "b.e": ["be", "b.e", "b.e.", "bachelor of engineering"],
+    "b.e.": ["be", "b.e", "b.e.", "bachelor of engineering"],
+    "bachelor of engineering": ["be", "b.e", "b.e.", "bachelor of engineering"],
+    "b.sc": ["b.sc", "bsc", "bachelor of science"],
+    "bsc": ["b.sc", "bsc", "bachelor of science"],
+    "bachelor of science": ["b.sc", "bsc", "bachelor of science"],
+    "bca": ["bca", "bachelor of computer application", "bachelor of computer applications"],
+    "bachelor of computer application": ["bca", "bachelor of computer application"],
+    "m.tech": ["m.tech", "mtech", "master of technology"],
+    "mtech": ["m.tech", "mtech", "master of technology"],
+    "master of technology": ["m.tech", "mtech", "master of technology"],
+    "mca": ["mca", "master of computer application", "master of computer applications"],
+    "master of computer application": ["mca", "master of computer application"],
+    "mba": ["mba", "master of business administration"],
+    "master of business administration": ["mba", "master of business administration"],
+    "m.sc": ["m.sc", "msc", "master of science"],
+    "msc": ["m.sc", "msc", "master of science"],
+    "master of science": ["m.sc", "msc", "master of science"],
+    "phd": ["phd", "ph.d", "ph.d.", "doctor of philosophy"],
+    "ph.d": ["phd", "ph.d", "ph.d.", "doctor of philosophy"],
+}
+
 
 def get_conn():
     database_url = os.getenv("DATABASE_URL")
@@ -130,16 +157,18 @@ def search_candidates(name=None, skills=None, degree=None):
         params.append(len(clean_skills))
 
     if degree and degree.strip():
+        term = degree.strip().lower()
+        patterns = [f"%{p}%" for p in _DEGREE_ALIASES.get(term, [term])]
         conditions.append(
             """
             EXISTS (
                 SELECT 1
                 FROM education e
-                WHERE e.candidate_id = c.id AND e.degree ILIKE %s
+                WHERE e.candidate_id = c.id AND e.degree ILIKE ANY(%s)
             )
             """
         )
-        params.append(f"%{degree.strip()}%")
+        params.append(patterns)
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 

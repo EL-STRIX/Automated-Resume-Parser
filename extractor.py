@@ -21,7 +21,15 @@ def extract_text(file):
 
     if ext == ".docx":
         doc = docx.Document(file)
-        parts = [p.text for p in doc.paragraphs if p.text and p.text.strip()]
+        parts = []
+        seen_headers = set()
+        for section in doc.sections:
+            for p in section.header.paragraphs:
+                text = p.text.strip()
+                if text and text not in seen_headers:
+                    seen_headers.add(text)
+                    parts.append(p.text)
+        parts.extend(p.text for p in doc.paragraphs if p.text and p.text.strip())
         for table in doc.tables:
             for row in table.rows:
                 for cell in row.cells:
