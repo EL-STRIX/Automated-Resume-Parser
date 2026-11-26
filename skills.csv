@@ -1,1 +1,91 @@
-
+skill,category
+Python,Programming
+Java,Programming
+C,Programming
+C++,Programming
+C#,Programming
+JavaScript,Programming
+TypeScript,Programming
+Go,Programming
+Rust,Programming
+Ruby,Programming
+PHP,Programming
+Swift,Programming
+Kotlin,Programming
+Scala,Programming
+R,Programming
+SQL,Programming
+Bash,Programming
+PowerShell,Programming
+MATLAB,Programming
+Perl,Programming
+PostgreSQL,Database
+MySQL,Database
+SQLite,Database
+MongoDB,Database
+Redis,Database
+Oracle,Database
+SQL Server,Database
+Cassandra,Database
+DynamoDB,Database
+Firebase,Database
+Elasticsearch,Database
+MariaDB,Database
+Snowflake,Database
+BigQuery,Database
+Neo4j,Database
+HTML,Web
+CSS,Web
+React,Web
+Angular,Web
+Vue,Web
+Next.js,Web
+Node.js,Web
+Express,Web
+Django,Web
+Flask,Web
+FastAPI,Web
+Spring Boot,Web
+ASP.NET,Web
+GraphQL,Web
+REST API,Web
+Tailwind CSS,Web
+Bootstrap,Web
+jQuery,Web
+Sass,Web
+Redux,Web
+Machine Learning,Data/ML
+Deep Learning,Data/ML
+NLP,Data/ML
+Computer Vision,Data/ML
+TensorFlow,Data/ML
+PyTorch,Data/ML
+Keras,Data/ML
+Scikit-learn,Data/ML
+Pandas,Data/ML
+NumPy,Data/ML
+SciPy,Data/ML
+Matplotlib,Data/ML
+Seaborn,Data/ML
+spaCy,Data/ML
+Hugging Face,Data/ML
+Spark,Data/ML
+Hadoop,Data/ML
+Tableau,Data/ML
+Power BI,Data/ML
+LangChain,Data/ML
+Git,Tools
+GitHub,Tools
+GitLab,Tools
+Docker,Tools
+Kubernetes,Tools
+Jenkins,Tools
+AWS,Tools
+Azure,Tools
+GCP,Tools
+Linux,Tools
+Jira,Tools
+Postman,Tools
+VS Code,Tools
+Terraform,Tools
+Ansible,Tools
